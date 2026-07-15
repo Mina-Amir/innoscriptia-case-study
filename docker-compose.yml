@@ -1,5 +1,7 @@
 services:
   dev:
+    env_file:
+      - ../.env
     build:
       context: .
       target: dev
@@ -11,6 +13,8 @@ services:
     profiles: [dev]
 
   prod:
+    env_file:
+      - ../.env
     build:
       context: .
       target: prod
