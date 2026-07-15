@@ -1,7 +1,7 @@
 services:
   dev:
     env_file:
-      - ../.env
+      - ./.env
     build:
       context: .
       target: dev
@@ -13,11 +13,13 @@ services:
     profiles: [dev]
 
   prod:
-    env_file:
-      - ../.env
     build:
       context: .
       target: prod
+      args:
+        VITE_NEWS_API_KEY: ${VITE_NEWS_API_KEY}
+        VITE_THE_GUARDIAN_API_KEY: ${VITE_THE_GUARDIAN_API_KEY}
+        VITE_NEW_YORK_TIMES_API_KEY: ${VITE_NEW_YORK_TIMES_API_KEY}
     ports:
       - "8080:80"
     profiles: [prod]

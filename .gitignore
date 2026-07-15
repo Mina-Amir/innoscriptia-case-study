@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment secrets (keep .env.example tracked)
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +30,4 @@ dist-ssr
 
 # Cursor agent skills (local scaffolding workflows)
 .cursor
+.cursorignore

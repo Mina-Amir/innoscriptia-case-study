@@ -4,6 +4,32 @@
 
 - Docker Desktop (or Docker Engine + Docker Compose v2)
 - No local `npm install` required to run via Docker
+- A `.env` file in the project root (see [Environment variables](#environment-variables))
+
+## Environment variables
+
+API keys are loaded from a `.env` file in the project root. Vite only exposes variables prefixed with `VITE_` to the client bundle.
+
+1. Copy the template: `cp .env.example .env`
+2. Replace placeholder values with your real API keys (see [`.env.example`](.env.example) for variable names)
+3. Restart or rebuild after any change:
+   - **Dev:** stop the container and run `docker compose --profile dev up` again
+   - **Prod:** rebuild the image — env vars are baked in at build time, not at nginx runtime
+
+| Mode | How env is loaded |
+|------|-------------------|
+| Dev (`docker:dev`) | `.env` is bind-mounted into the container; Vite reads it on dev-server start |
+| Prod (`docker:prod`) | `VITE_*` values are passed as Docker build args from your host `.env` during `npm run build` inside the image |
+
+For plain Docker prod builds (without Compose), pass build args explicitly:
+
+```bash
+docker build --target prod \
+  --build-arg VITE_NEWS_API_KEY="$VITE_NEWS_API_KEY" \
+  --build-arg VITE_THE_GUARDIAN_API_KEY="$VITE_THE_GUARDIAN_API_KEY" \
+  --build-arg VITE_NEW_YORK_TIMES_API_KEY="$VITE_NEW_YORK_TIMES_API_KEY" \
+  -t innoscriptia-case-study:prod .
+```
 
 ## Dev mode (hot reload)
 
@@ -103,6 +129,8 @@ docker ps
 
 ## Troubleshooting
 
+- **Missing env vars on startup:** ensure `.env` exists (`cp .env.example .env`) and all `VITE_*` keys are set, then restart dev or rebuild prod
+- **Prod env changes not applied:** rebuild with `docker compose --profile prod build --no-cache` — runtime `env_file` does not affect the static client bundle
 - **Port already in use:** change the host port in `docker-compose.yml` (e.g. `5174:5173`) or use `-p 5174:5173` with plain Docker
 - **HMR not updating:** ensure `vite.config.ts` has `server.watch.usePolling: true`
 - **Stale `node_modules` in dev (Compose):** `docker compose --profile dev down -v` then restart
